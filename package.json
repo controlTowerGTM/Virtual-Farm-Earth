@@ -1,0 +1,28 @@
+{
+  "name": "farm-tracker",
+  "version": "1.0.0",
+  "description": "Farm Tracker is an API for collecting data on gamification activities related to agriculture. It allows for the tracking of user progress and errors.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "data-collection",
+    "agriculture",
+    "earth-university",
+    "virtual-farm"
+  ],
+  "author": "@gotomars4Dlab",
+  "license": "ISC",
+  "prettier": "./.prettierrc",
+  "dependencies": {
+    "express": "^4.18.2",
+    "jest": "^29.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.7"
+  }
+}
