@@ -27,8 +27,7 @@ router.get("/:name", async (req, res, next) => {
 
 router.post("/start", async (req, res, next) => {
   try {
-    const { missionName } = req.body;
-    const ip = req.ip;
+    const { missionName, ip } = req.body;
 
     // Check if mission exists
     const mission = await service.findByName(missionName);
