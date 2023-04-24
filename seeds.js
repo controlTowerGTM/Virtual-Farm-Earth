@@ -101,6 +101,14 @@ const seedMissions = [
     origins: [],
   },
   {
+    name: "hydric-demand",
+    attemptsMade: 0,
+    attemptsCompleted: 0,
+    abandonedAttempts: 0,
+    errors: 0,
+    origins: [],
+  },
+  {
     name: "remote-sensing",
     attemptsMade: 0,
     attemptsCompleted: 0,
