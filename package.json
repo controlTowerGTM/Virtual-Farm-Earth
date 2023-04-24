@@ -24,7 +24,8 @@
     "ipaddr": "^0.1.0",
     "jest": "^29.5.0",
     "mongodb": "^5.3.0",
-    "mongoose": "^7.0.4"
+    "mongoose": "^7.0.4",
+    "satelize-lts": "^1.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22",

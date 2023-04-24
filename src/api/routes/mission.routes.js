@@ -1,4 +1,5 @@
 const express = require("express");
+const satelize = require("satelize-lts");
 const MissionService = require("../services/mission.service");
 
 const router = express.Router();
@@ -27,7 +28,7 @@ router.get("/:name", async (req, res, next) => {
 router.post("/start", async (req, res, next) => {
   try {
     const { missionName } = req.body;
-    const originIP = req.ip;
+    const ip = req.ip;
 
     // Check if mission exists
     const mission = await service.findByName(missionName);
@@ -39,10 +40,15 @@ router.post("/start", async (req, res, next) => {
     }
 
     // Get origin IP
-    const { country } = { country: "CR" };
-    let origin = mission.origins.find((o) => o.country === country);
+    let country_code = "";
+    satelize.satelize({ ip: ip }, (err, payload) => {
+      console.log(payload);
+      country_code = payload.country_code;
+    });
+
+    let origin = mission.origins.find((o) => o.country === country_code);
     if (!origin) {
-      origin = { country: country, count: 1 };
+      origin = { country: country_code, count: 1 };
       mission.origins.push(origin);
     }
     origin.count++;
