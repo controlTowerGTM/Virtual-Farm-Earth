@@ -40,11 +40,15 @@ router.post("/start", async (req, res, next) => {
     }
 
     // Get origin IP
-    let country_code = "";
-    satelize.satelize({ ip: ip }, (err, payload) => {
-      console.log(payload);
-      country_code = payload.country_code;
-    });
+    let country_code = "Unknown";
+    try {
+      satelize.satelize({ ip: ip }, (err, payload) => {
+        console.log(payload);
+        country_code = payload.country_code;
+      });
+    } catch (error) {
+      console.log(error);
+    }
 
     let origin = mission.origins.find((o) => o.country === country_code);
     if (!origin) {
