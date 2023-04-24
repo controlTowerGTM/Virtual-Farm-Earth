@@ -5,6 +5,7 @@ const missionSchema = new mongoose.Schema(
     name: String,
     attemptsMade: Number,
     attemptsCompleted: Number,
+    abandonedAttempts: Number,
     errors: Number,
     origins: [
       {

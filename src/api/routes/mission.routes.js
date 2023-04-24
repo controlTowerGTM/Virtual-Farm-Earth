@@ -1,24 +1,24 @@
 const express = require("express");
 const MissionService = require("../services/mission.service");
-const geoIP = require("geoip-lite");
 
 const router = express.Router();
 const service = new MissionService();
 
 router.get("/", async (req, res, next) => {
   try {
-    const songs = await service.find();
-    return res.status(200).json(songs).end();
+    const missions = await service.find();
+    return res.status(200).json(missions).end();
   } catch (error) {
     next(error);
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:name", async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const song = await service.findOne(id);
-    res.json(song);
+    const { name } = req.params;
+    const mission = await service.findByName(name);
+    if (!mission) return res.status(404).send("Mission not found").end();
+    res.json(mission);
   } catch (error) {
     next(error);
   }
@@ -39,13 +39,16 @@ router.post("/start", async (req, res, next) => {
     }
 
     // Get origin IP
-    const { country } = geoIP.lookup(originIP);
+    const { country } = { country: "CR" };
     let origin = mission.origins.find((o) => o.country === country);
     if (!origin) {
       origin = { country: country, count: 1 };
       mission.origins.push(origin);
     }
     origin.count++;
+
+    // Update attempts made
+    mission.attemptsMade++;
 
     // Update mission data
     console.log(`🟢 Mission start registered: ${mission}`);
@@ -56,25 +59,33 @@ router.post("/start", async (req, res, next) => {
   }
 });
 
-router.patch("/:id", async (req, res, next) => {
+router.post("/finish", async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const body = req.body;
-    let song = await service.findOne(id);
+    const { missionName, errors } = req.body;
 
-    if (song) {
-      song = {
-        name: body.name || song.name,
-        artist: body.artist || song.artist,
-        album: body.album || song.album,
-        cover: body.cover || song.cover,
-        url: body.url || song.url,
-        lyrics: body.lyrics || song.lyrics,
-      };
-
-      service.update(id, song);
-      res.json(song);
+    // Check if mission exists
+    const mission = await service.findByName(missionName);
+    if (!mission) {
+      console.log(
+        `🟠 Mission "${missionName}" has not been registered in the system`
+      );
+      return res.status(404).send("Mission not found").end();
     }
+
+    // Update attempts completed
+    mission.attemptsCompleted++;
+
+    // Add the errors
+    mission.errors += errors;
+
+    // Calculate abandoned attempts
+    mission.abandonedAttempts =
+      mission.attemptsMade - mission.attemptsCompleted;
+
+    // Update mission data
+    console.log(`🟢 Mission finish registered: ${mission}`);
+    service.update(mission.id, mission);
+    res.json(mission);
   } catch (error) {
     next(error);
   }
