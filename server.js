@@ -1,11 +1,18 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const router = require("./network/routes");
-
 const app = express();
+app.set("trust proxy", true);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// Cors config
+app.all("/", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "POST,GET,PUT,DELETE");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
 
 // Home entry point
 app.get("/", (req, res) => {
@@ -14,5 +21,5 @@ app.get("/", (req, res) => {
 
 router(app);
 
-const port = 3000;
+const port = config.httpPort;
 app.listen(port, () => console.log(`Server running 🚀 on port: ${port}... `));
