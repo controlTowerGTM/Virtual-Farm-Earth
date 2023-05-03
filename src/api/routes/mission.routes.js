@@ -60,7 +60,8 @@ router.post("/start", async (req, res, next) => {
 
     // Update mission data
     console.log(`🟢 Mission start registered: ${mission}`);
-    service.update(mission.id, mission);
+    await service.update(mission.id, mission);
+    await service.updateAttempts();
     res.json(mission);
   } catch (error) {
     next(error);
@@ -86,15 +87,11 @@ router.post("/finish", async (req, res, next) => {
     // Add the errors
     mission.errors += parseInt(errors, 10);
 
-    // Calculate abandoned attempts
-    mission.abandonedAttempts =
-      mission.attemptsMade - mission.attemptsCompleted;
-
-    await service.updateAttempts();
-
     // Update mission data
     console.log(`🟢 Mission finish registered: ${mission}`);
-    service.update(mission.id, mission);
+    await service.update(mission.id, mission);
+    await service.updateAttempts();
+
     res.json(mission);
   } catch (error) {
     next(error);
