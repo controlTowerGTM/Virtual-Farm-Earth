@@ -7,6 +7,7 @@ const service = new MissionService();
 
 router.get("/", async (req, res, next) => {
   try {
+    await service.updateAttempts();
     const missions = await service.find();
     return res.status(200).json(missions).end();
   } catch (error) {
@@ -17,6 +18,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:name", async (req, res, next) => {
   try {
     const { name } = req.params;
+    await service.updateAttempts();
     const mission = await service.findByName(name);
     if (!mission) return res.status(404).send("Mission not found").end();
     res.json(mission);
@@ -82,11 +84,13 @@ router.post("/finish", async (req, res, next) => {
     mission.attemptsCompleted++;
 
     // Add the errors
-    mission.errors += errors;
+    mission.errors += parseInt(errors, 10);
 
     // Calculate abandoned attempts
     mission.abandonedAttempts =
       mission.attemptsMade - mission.attemptsCompleted;
+
+    await service.updateAttempts();
 
     // Update mission data
     console.log(`🟢 Mission finish registered: ${mission}`);
