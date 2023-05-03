@@ -5,9 +5,9 @@ class MissionService {
   constructor() {}
 
   async create(mission) {
-    const newSong = new Mission({ ...mission });
-    await newSong.save();
-    return newSong;
+    const newMission = new Mission({ ...mission });
+    await newMission.save();
+    return newMission;
   }
 
   async find() {
@@ -16,10 +16,10 @@ class MissionService {
   }
 
   async findByName(missionName) {
-    const song = await Mission.findOne({
+    const mission = await Mission.findOne({
       name: `${missionName}`,
     });
-    return song;
+    return mission;
   }
 
   async findOne(id) {
@@ -28,6 +28,17 @@ class MissionService {
       throw boom.notFound("Mission not found");
     }
     return mission;
+  }
+
+  async updateAttempts() {
+    const missionList = await this.find();
+    missionList.forEach(async (mission) => {
+      mission.abandonedAttempts =
+        mission.attemptsMade - mission.attemptsCompleted;
+      if (mission.abandonedAttempts < 0) mission.abandonedAttempts = 0;
+      await this.update(mission.id, mission);
+    });
+    return missionList;
   }
 
   async update(id, changes) {
